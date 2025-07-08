@@ -1,0 +1,187 @@
+TECHNICAL SPECIFICATION DOCUMENT
+Project Name: CaseThread
+Version: 0.2
+Purpose:
+A multi-agent legal-research and drafting system with project-based memory, template-driven document generation, validated legal citations, and deep integration with CourtListener (Free Law Project) and Case.law data.
+
+--------------------------------------------------------------------
+PRODUCT GOALS
+--------------------------------------------------------------------
+CaseThread enables legal professionals to
+• Maintain persistent, project-scoped research memories
+• Run multi-agent research pipelines with specialist legal reasoning
+• Consume real-world case-law data from CourtListener and Case.law
+• Highlight and annotate key passages in opinions
+• Perform cross-jurisdiction comparison and strategy planning
+• Generate high-quality legal documents from structured templates in multiple tones/styles
+• Embed validated citations automatically
+
+--------------------------------------------------------------------
+TECH-STACK OVERVIEW
+--------------------------------------------------------------------
+UI                 : ElectronJS + React
+Orchestration      : Node.js (TypeScript recommended)
+Agents             : Python micro-services (gRPC or REST bridge)
+Storage            : SQLite (symbolic) plus FAISS or Chroma (vector)
+Embeddings         : Open-source models (e.g., BGE) or hosted embeddings
+Data Sources       : CourtListener (Free Law Project) and Case.law
+Template Engine    : Mustache / Handlebars (or JSON-based system)
+
+--------------------------------------------------------------------
+DATA SOURCES & ACCESS STRATEGY
+--------------------------------------------------------------------
+1. CourtListener (Free Law Project)
+   • REST API – opinions, dockets, judges, metadata
+   • Bulk Dumps – RECAP federal and many state courts
+   • Citation Lookup API – verify citation format and source
+   • Primary Use – high-frequency opinion fetch and citation validation
+   • URL – https://www.courtlistener.com/api
+
+2. Caselaw Access Project (Case.law)
+   • REST API – access to roughly 6.9 million historical opinions
+   • Public Rate Limit – about 500 requests per day
+   • Primary Use – long-tail or state-specific research
+   • URL – https://case.law/api/
+
+Access Plan
+   1. Default to CourtListener REST for routine queries.
+   2. Fallback to Case.law when CourtListener lacks coverage or more historical depth is required.
+   3. Provide optional bulk-ingest (CourtListener dumps → local FAISS) for offline speed and to avoid rate-limits.
+
+--------------------------------------------------------------------
+SYSTEM ARCHITECTURE (high-level)
+--------------------------------------------------------------------
+Electron UI      ->  React interface (document editor, case viewer, highlights)
+IPC/HTTP Bridge  ->  Node.js Controller Layer
+                     • Agent orchestrator
+                     • Template manager
+                     • Data-layer adapters
+gRPC/REST Bridge ->  Python Agent Micro-services
+                     • NLP and embedding
+                     • Retrieval and ranking
+                     • Drafting and validation
+Local Storage    ->  SQLite (symbolic data)
+                     FAISS / Chroma (vector indices)
+
+--------------------------------------------------------------------
+CORE AGENTS & ROLES
+--------------------------------------------------------------------
+Orchestrator                : Routes tasks; tracks project state and pipelines
+Query Interpreter           : Transforms user text into structured search specs
+Retriever                   : Calls CourtListener/Case.law APIs with filters
+Embedder                    : Vectorises opinions and queries
+Ranker                      : Scores results by similarity, authority, and citations
+Summarizer                  : Extracts facts, holding, rule, rationale, posture
+Case Highlighting           : Auto-highlights via NLP; stores user highlights
+Citation Verifier           : Confirms and formats citations via CourtListener
+Specialist Agents           : Domain reasoning (Criminal-Law, Con-Law, Torts, Civil-Rights, Fact-Pattern)
+Cross-Jurisdiction Planner  : Compares doctrinal rules across courts
+Template Parser             : Parses templates into fillable sections and variables
+Drafting Agent              : Composes documents (multi-tone) with citations
+Feedback Agent              : Captures user edits/ratings; adjusts weighting logic
+
+--------------------------------------------------------------------
+SPECIALIST AGENTS (domains)
+--------------------------------------------------------------------
+• Constitutional Law
+• Criminal Law
+• Torts
+• Civil Rights
+• Fact Pattern Mapper (matches hypotheticals to precedent)
+
+Each agent maintains project-scoped memory of key cases, highlights, doctrinal summaries, and trends.
+
+--------------------------------------------------------------------
+PROJECT MEMORY SCHEMA (simplified)
+--------------------------------------------------------------------
+project_id              : unique identifier
+title                   : project name
+jurisdiction            : primary jurisdiction
+created                 : ISO date
+queries                 : list of prior queries
+retrieved_cases         : metadata + text + embedding id
+highlighted_passages    : case id, passage, type, user flag
+agent_notes             : per-domain structured insights
+jurisdiction_comparison : cross-court doctrinal matrix
+drafts                  : assertive / conservative / persuasive text
+template_used           : template identifier
+final_document          : export path or blob
+
+--------------------------------------------------------------------
+KEY WORKFLOWS
+--------------------------------------------------------------------
+1. Project Initialization
+   • User creates project with name, jurisdiction, issue.
+   • Controller sets up SQLite tables and FAISS namespace.
+
+2. Legal Research
+   • User query → Query Interpreter → structured search.
+   • Retriever fetches opinions; Embedder vectorises; Ranker orders.
+   • Summarizer produces abstracts.
+   • Case Highlighting auto-marks holdings; user may add highlights.
+   • Specialist Agents store insights in agent_notes.
+
+3. Cross-Jurisdiction Comparison
+   • User selects jurisdictions to compare.
+   • Planner performs parallel searches; extracts rule statements.
+   • Doctrinal matrix rendered and saved.
+
+4. Document Drafting
+   • User selects template and tone.
+   • Template Parser identifies sections and variables.
+   • Drafting Agent synthesises context, composes sections with inline citations.
+   • Citation Verifier validates every cite.
+   • Draft saved (JSON + rich-text); user reviews and exports (PDF, DOCX, MD).
+
+--------------------------------------------------------------------
+DRAFTING AGENT INPUTS (example JSON)
+--------------------------------------------------------------------
+{
+  "template_id": "motion_suppress",
+  "tone": "conservative",
+  "user_vars": { "client_name": "Jane Smith" },
+  "context": {
+    "summaries": [],
+    "highlights": [],
+    "agent_notes": {},
+    "jurisdiction_comparison": {}
+  }
+}
+
+--------------------------------------------------------------------
+DRAFTING AGENT INTERNAL MODULES
+--------------------------------------------------------------------
+1. Template Parser      – locate required slots/sections
+2. Context Synthesiser  – merge research artifacts
+3. Section Composer     – write each part, insert quotations
+4. Citation Embedding   – verify and link authoritative citations
+5. Tone Modifier        – adjust diction and rhetorical stance
+6. Output Validator     – ensure completeness, variable checks, returns JSON + rendered text
+
+--------------------------------------------------------------------
+CITATION DATA MODEL (example)
+--------------------------------------------------------------------
+case_id     : "456"
+citation    : "Arizona v. Gant, 556 U.S. 332 (2009)"
+url         : "https://courtlistener.com/opinion/112345/arizona-v-gant/"
+quoted_text : "Searches incident to arrest must be limited..."
+used_in     : ["legal_standard", "argument"]
+
+--------------------------------------------------------------------
+OUTPUTS
+--------------------------------------------------------------------
+Internal   : JSON bundle (sections, citations)
+Editor     : Rich-text with inline citation tool-tips
+Export     : PDF, DOCX, Markdown, Template-reversible JSON
+
+--------------------------------------------------------------------
+NEXT ENGINEERING TASKS
+--------------------------------------------------------------------
+1. Scaffold Project Memory Manager (SQLite + FAISS)
+2. Implement Template Parser + minimal Drafting Agent prototype
+3. Build Retriever wrapper for CourtListener; mock Case.law fallback
+4. Integrate Citation Verifier via CourtListener lookup
+5. Create end-to-end demo: query → research → highlight → draft
+
+--------------------------------------------------------------------
+END OF SPECIFICATION
