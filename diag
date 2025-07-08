@@ -1,0 +1,44 @@
+graph TD
+    A[User Query] --> B[Query Interpreter]
+    B --> C[Retriever Agent]
+    C --> D[Embedder Agent]
+    D --> E[Ranker Agent]
+    
+    E --> F{Legal Domain<br/>Router}
+    
+    F -->|Constitutional| G[Constitutional Law<br/>Agent]
+    F -->|Criminal| H[Criminal Law<br/>Agent]
+    F -->|Civil Rights| I[Civil Rights<br/>Agent]
+    F -->|Fact Pattern| J[Fact Pattern<br/>Mapper]
+    
+    G --> K[Specialist Insights<br/>Aggregator]
+    H --> K
+    I --> K
+    J --> K
+    
+    K --> L[Template Parser]
+    L --> M[Drafting Agent]
+    M --> N[Citation Verifier]
+    N --> O[Final Document]
+    
+    P[(SQLite Database)] --> Q[Project Memory<br/>Manager]
+    R[(FAISS Vector Store)] --> Q
+    Q --> S[LangGraph State<br/>Persistence]
+    
+    S -.-> B
+    S -.-> C
+    S -.-> D
+    S -.-> E
+    S -.-> G
+    S -.-> H
+    S -.-> I
+    S -.-> J
+    S -.-> L
+    S -.-> M
+    S -.-> N
+    
+    style A fill:#e1f5fe
+    style O fill:#c8e6c9
+    style F fill:#fff3e0
+    style K fill:#fff3e0
+    style S fill:#f3e5f5

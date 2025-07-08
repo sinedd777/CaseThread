@@ -1,0 +1,82 @@
+{
+  "name": "casethread",
+  "version": "0.2.0",
+  "description": "Multi-agent legal research and drafting system with project-based memory, template-driven document generation, and validated legal citations",
+  "main": "dist/main/main.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "start": "npm run build && electron .",
+    "dev": "npm run build:watch & nodemon --exec electron . --delay 1000ms",
+    "dev:renderer": "cd src/renderer && npx webpack serve --mode development --port 3000",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "lint": "eslint src --ext .ts,.tsx",
+    "lint:fix": "eslint src --ext .ts,.tsx --fix",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "setup:dev": "npm install && npm run build",
+    "clean": "rm -rf dist node_modules"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sinedd777/CaseThread.git"
+  },
+  "keywords": [
+    "legal",
+    "ai",
+    "research",
+    "document generation",
+    "templates",
+    "citations",
+    "electron",
+    "typescript"
+  ],
+  "author": "CaseThread Team",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sinedd777/CaseThread/issues"
+  },
+  "homepage": "https://github.com/sinedd777/CaseThread#readme",
+  "build": {
+    "appId": "com.casethread.app",
+    "productName": "CaseThread",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "node_modules/**/*"
+    ],
+    "mac": {
+      "category": "public.app-category.productivity"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "linux": {
+      "target": "AppImage"
+    }
+  },
+  "devDependencies": {
+    "@types/electron": "^1.6.10",
+    "@types/node": "^22.10.2",
+    "@typescript-eslint/eslint-plugin": "^8.18.1",
+    "@typescript-eslint/parser": "^8.18.1",
+    "electron": "^33.2.1",
+    "electron-builder": "^25.1.8",
+    "eslint": "^9.17.0",
+    "nodemon": "^3.1.9",
+    "prettier": "^3.4.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.2"
+  },
+  "dependencies": {
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  }
+}

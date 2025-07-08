@@ -1,114 +1,190 @@
-# CaseThread - Legal Document Generation for IP Attorneys
+# CaseThread
 
-CaseThread is an open-source legal AI agent designed specifically for intellectual property attorneys. It provides template-based document generation with AI assistance, offering a low-cost alternative to expensive legal tech solutions.
+**Multi-agent legal research and drafting system with project-based memory, template-driven document generation, and validated legal citations.**
 
-## 🎯 Target Audience
+## Overview
 
-Licensed IP attorneys in small to mid-sized firms who need efficient document generation tools without the $100K+/year price tag of enterprise solutions.
+CaseThread is a sophisticated legal technology platform that enables legal professionals to conduct comprehensive research, maintain project-scoped memory, and generate high-quality legal documents through AI-driven agents and structured templates.
 
-## 📋 Features
+## Architecture
 
-- **8 Comprehensive IP Document Templates**:
-  - Provisional Patent Application
-  - IP-Specific Non-Disclosure Agreement
-  - Patent License Agreement
-  - Trademark Application (TEAS Plus)
-  - Patent Assignment Agreement
-  - Office Action Response
-  - Cease and Desist Letter
-  - Technology Transfer Agreement
+- **Frontend**: Electron + React + TypeScript
+- **Backend**: Node.js orchestration layer + Python AI services
+- **Data**: SQLite + FAISS/Chroma vector databases
+- **APIs**: CourtListener + Case.law integration
 
-- **AI-Enhanced Generation**: Strategic integration with OpenAI API for intelligent content generation
-- **Smart Validation**: Field-level validation and conditional logic
-- **Firm Customization**: Templates can be customized to match firm preferences
-- **CLI-First Design**: Command-line interface for efficient workflow (GUI coming in Phase 2)
-
-## 🚀 Getting Started
-
-*Note: This project is currently in development. Installation instructions will be added as the CLI is implemented.*
+## Quick Start
 
 ### Prerequisites
-- Node.js 18+
-- TypeScript
-- OpenAI API key
-- Licensed attorney status (required for use)
 
-### Planned Installation
+- **Node.js**: Version 18+ 
+- **Python**: Version 3.9+
+- **Git**: For version control
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/sinedd777/CaseThread.git
+   cd CaseThread
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Set up Python environment**
+   ```bash
+   python3 -m venv python-services
+   source python-services/bin/activate  # On Windows: python-services\Scripts\activate
+   pip install -r python-services/requirements.txt
+   ```
+
+4. **Build the project**
+   ```bash
+   npm run build
+   ```
+
+### Development
+
+#### Quick Start (Automated)
 ```bash
-# Clone the repository
-git clone https://github.com/[username]/CaseThread.git
+# Start all services
+./scripts/dev-start.sh
 
-# Install dependencies
-npm install
-
-# Configure OpenAI API key
-export OPENAI_API_KEY="your-api-key"
-
-# Run the CLI
-npm run cli
+# Stop all services
+./scripts/dev-stop.sh
 ```
 
-## 📁 Project Structure
+#### Manual Development
+```bash
+# Terminal 1: Start Python services
+cd python-services
+source bin/activate  # On Windows: Scripts\activate
+python main.py
+
+# Terminal 2: Start Electron app
+npm start
+
+# Terminal 3: Development build (optional)
+npm run build:watch
+```
+
+### Available Scripts
+
+- `npm run build` - Build TypeScript
+- `npm run build:watch` - Build with watch mode
+- `npm start` - Start Electron app
+- `npm run dev` - Development mode with auto-reload
+- `npm run lint` - Run ESLint
+- `npm run lint:fix` - Fix linting issues
+- `npm run pack` - Package for distribution
+- `npm run dist` - Build distributable
+
+### API Documentation
+
+Once the Python services are running, visit:
+- **API Docs**: http://localhost:8080/docs
+- **Health Check**: http://localhost:8080/health
+
+## Features
+
+### Core Components
+
+- **Project Memory Manager**: Persistent research context per project
+- **Legal Research Agents**: Specialized AI agents for different legal domains
+- **Template Engine**: Generate documents from JSON templates
+- **Citation Validator**: Verify legal citations through CourtListener
+- **Multi-Agent System**: Orchestrated AI agents for comprehensive analysis
+
+### Legal Data Sources
+
+- **CourtListener**: Primary source for legal opinions and citations
+- **Case.law**: Secondary source for historical cases (6.9M+ opinions)
+
+### Document Templates
+
+Pre-built templates for common legal documents:
+- Non-Disclosure Agreements (NDAs)
+- Patent Applications
+- Trademark Applications
+- Cease & Desist Letters
+- Office Action Responses
+- Technology Transfer Agreements
+
+## Project Structure
 
 ```
-/templates/
-  /core/              # JSON template files
-  /explanations/      # Detailed explanations for each template
-  /examples/          # Example rendered outputs
-  template-*.md       # Template documentation
+CaseThread/
+├── src/
+│   ├── main/              # Electron main process
+│   └── renderer/          # React application
+├── python-services/       # Python AI agents
+│   ├── main.py           # FastAPI application
+│   ├── requirements.txt  # Python dependencies
+│   └── services/         # Agent implementations
+├── templates/            # Legal document templates
+├── scripts/              # Development scripts
+├── docs/                 # Documentation
+└── memory-bank/          # Project memory system
 ```
 
-## 🛠️ Technology Stack
+## Memory Bank System
 
-- **Language**: TypeScript
-- **CLI Framework**: Commander.js (planned)
-- **Testing**: Jest
-- **Database**: SQLite (planned)
-- **AI**: OpenAI API
-- **GUI** (Phase 2): Electron + React
+CaseThread uses a comprehensive memory bank system for persistent context:
 
-## 📈 Development Roadmap
+- **Project Brief**: Foundation and scope
+- **Product Context**: User experience and goals
+- **System Patterns**: Architecture and design
+- **Tech Context**: Technology stack and setup
+- **Active Context**: Current work and priorities
+- **Progress**: Implementation tracking
 
-### Phase 1: CLI MVP (Weeks 1-6)
-- [ ] CLI framework setup
-- [ ] Template rendering engine
-- [ ] OpenAI integration
-- [ ] Database schema
-- [ ] Basic document generation
+See `memory-bank/README.md` for detailed information.
 
-### Phase 2: GUI Development (Weeks 7-10)
-- [ ] Electron app setup
-- [ ] React UI implementation
-- [ ] Visual review interface
-- [ ] Export functionality
+## Development Status
 
-### Phase 3: Beta Launch (Weeks 11-12)
-- [ ] User testing with IP attorneys
-- [ ] Documentation completion
-- [ ] Performance optimization
+**Current Phase**: Foundation Setup ✅  
+**Overall Progress**: 15% Complete
 
-## 💰 Business Model
+### ✅ Completed
+- Memory bank system and documentation
+- Node.js + TypeScript + Electron setup
+- Python FastAPI service structure
+- Basic project scaffolding
+- Development scripts and tooling
 
-- **Open Source Core**: Free forever
-- **Premium Support**: $99/month for priority support and advanced features
+### 🔄 In Progress
+- Core module implementation
+- Template system development
+- Agent framework foundation
 
-## ⚖️ Legal Notice
+### 📋 Planned
+- CourtListener API integration
+- Case.law API integration
+- Vector database implementation
+- Legal document generation
+- Citation validation system
 
-CaseThread is a tool designed to assist licensed attorneys in document generation. It does not provide legal advice and should not be used as a substitute for professional legal judgment. Users retain full responsibility for all legal work product.
+## Contributing
 
-## 🤝 Contributing
+1. Read the memory bank documentation in `memory-bank/`
+2. Check current progress in `memory-bank/activeContext.md`
+3. Follow the development setup instructions above
+4. Submit pull requests with clear descriptions
 
-Contributions are welcome! Please read our contributing guidelines (coming soon) before submitting PRs.
+## License
 
-## 📄 License
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-[License information to be added]
+## Support
 
-## 🔗 Links
-
-- [Documentation](https://github.com/[username]/CaseThread/wiki) (coming soon)
-- [Issues](https://github.com/[username]/CaseThread/issues)
+For questions, issues, or contributions:
+- **GitHub Issues**: [Create an issue](https://github.com/sinedd777/CaseThread/issues)
+- **Documentation**: Check the `docs/` directory
+- **Memory Bank**: See `memory-bank/` for comprehensive project context
 
 ---
 
-Built with ❤️ for the legal community by developers who believe legal technology should be accessible to all. 
+*CaseThread is an open-source legal AI platform designed to make sophisticated legal research and document generation accessible to legal professionals of all sizes.* 
